@@ -1,5 +1,20 @@
 /**
+ * Copyright © 2015 Martin Scharm <martin@binfalse.de>
  * 
+ * This file is part of CaRoWeb.
+ * 
+ * CaRoWeb is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * CaRoWeb is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with CaRoWeb. If not, see <http://www.gnu.org/licenses/>.
  */
 package de.unirostock.sems.caroweb;
 
@@ -47,8 +62,8 @@ public class Converter
 	 * 
 	 */
 	private static final long	serialVersionUID	= -5459458067603941235L;
-
-
+	
+	
 	private void run (HttpServletRequest request, HttpServletResponse response)
 		throws ServletException,
 			IOException
@@ -163,14 +178,15 @@ public class Converter
 		
 		if (result != null && Files.exists (result))
 			json.put ("checkout", result.getFileName ().toString ());
-
+		
 		response.setContentType ("application/json");
 		response.setCharacterEncoding ("UTF-8");
 		PrintWriter outWriter = response.getWriter ();
 		outWriter.print (json);
 		out.delete ();
 	}
-
+	
+	
 	protected static final String extractFileName (Part part)
 	{
 		String header = part.getHeader ("content-disposition");
@@ -190,6 +206,7 @@ public class Converter
 		return "container";
 	}
 	
+	
 	private void checkout (HttpServletRequest request,
 		HttpServletResponse response, Path storage, String req)
 		throws ServletException,
@@ -204,14 +221,14 @@ public class Converter
 		
 		try
 		{
-			String mime = 
-				target.toString ().endsWith ("omex") ?
-					"application/zip" : "application/vnd.wf4ever.robundle+zip";
+			String mime = target.toString ().endsWith ("omex") ? "application/zip"
+				: "application/vnd.wf4ever.robundle+zip";
 			
 			response.reset ();
 			response.setBufferSize (CaRoWebutils.DEFAULT_BUFFER_SIZE);
 			response.setContentType (mime);
-			response.setHeader ("Content-Length", String.valueOf (target.toFile ().length ()));
+			response.setHeader ("Content-Length",
+				String.valueOf (target.toFile ().length ()));
 			response.setHeader ("Content-Disposition", "attachment; filename=\""
 				+ req + "\"");
 			response.setHeader (
@@ -220,8 +237,8 @@ public class Converter
 					.currentTimeMillis () + CaRoWebutils.CACHE_TIME * 1000)));
 			response
 				.setHeader ("Cache-Control", "max-age=" + CaRoWebutils.CACHE_TIME);
-			response.setHeader ("Last-Modified",
-				CaRoWebutils.downloadDateFormater.format (new Date (Files.getLastModifiedTime (target).toMillis ())));
+			response.setHeader ("Last-Modified", CaRoWebutils.downloadDateFormater
+				.format (new Date (Files.getLastModifiedTime (target).toMillis ())));
 			response.setHeader ("ETag",
 				GeneralTools.hash (target + "-" + Files.getLastModifiedTime (target)));
 			
@@ -231,7 +248,7 @@ public class Converter
 				response.getOutputStream (), CaRoWebutils.DEFAULT_BUFFER_SIZE);
 			
 			// pass the stream to client
-			byte[] buffer = new byte [CaRoWebutils.DEFAULT_BUFFER_SIZE];
+			byte[] buffer = new byte[CaRoWebutils.DEFAULT_BUFFER_SIZE];
 			int length;
 			while ( (length = input.read (buffer)) > 0)
 			{
@@ -246,7 +263,8 @@ public class Converter
 		catch (IOException e)
 		{
 			// whoops, that's our fault. shouldn't happen. hopefully.
-			LOGGER.error ("unable to dump file " + target + " (at least not in an expected form)");
+			LOGGER.error ("unable to dump file " + target
+				+ " (at least not in an expected form)");
 		}
 		error (request, response, "couldn't dump file");
 	}
@@ -255,6 +273,7 @@ public class Converter
 	private void error (HttpServletRequest request, HttpServletResponse response,
 		String message) throws ServletException, IOException
 	{
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		request.setAttribute ("error", message);
 		Index.run (request, response);
 	}
@@ -268,7 +287,14 @@ public class Converter
 		throws ServletException,
 			IOException
 	{
-		run (request, response);
+		try
+		{
+			run (request, response);
+		}
+		catch (ServletException e)
+		{
+			error (request, response, "invalid request");
+		}
 	}
 	
 	
