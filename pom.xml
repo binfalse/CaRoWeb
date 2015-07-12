@@ -1,11 +1,37 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>CaRoWeb</artifactId>
 	<packaging>war</packaging>
-	<version>0.9.1</version>
-	<name>CaRoWeb Maven Webapp</name>
+	<version>0.9.2</version>
+	<name>CaRoWeb</name>
+
+	<developers>
+		<developer>
+			<name>Martin Scharm</name>
+			<id>martin</id>
+			<email>martin@binfalse.de</email>
+			<roles>
+				<role>Java Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+
 	<url>http://maven.apache.org</url>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -41,7 +67,7 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CaRo</artifactId>
-			<version>0.6</version>
+			<version>0.8.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -49,6 +75,26 @@
 			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
+		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>sems-maven-repository</id>
+			<name>SEMS Maven Release Repository</name>
+			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
+			<layout>default</layout>
+		</snapshotRepository>
+
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>sems-maven-repository</id>
+			<name>Enterprise Systems Maven Repository</name>
+			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
+
 	<build>
 		<finalName>CaRoWeb</finalName>
 		<extensions>
@@ -92,4 +138,61 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>sems-maven-repo-releases</id>
+			<name>SEMS Maven repository</name>
+			<url>http://mvn.sems.uni-rostock.de/releases/</url>
+		</repository>
+		<repository>
+			<id>sems-maven-repo-snapshots</id>
+			<name>SEMS Maven repository</name>
+			<url>http://mvn.sems.uni-rostock.de/snapshots/</url>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<!-- deployment profile -->
+		<profile>
+			<id>release</id>
+			<!-- build plugin configuration for the deploy -->
+			<!-- not necessary to always nclude the sources and javadocs -->
+			<build>
+				<plugins>
+					<!-- attach sources -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+
+						<configuration>
+							<attach>true</attach>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- attach javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
