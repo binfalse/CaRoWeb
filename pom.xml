@@ -3,7 +3,7 @@
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>CaRoWeb</artifactId>
 	<packaging>war</packaging>
-	<version>0.9.6</version>
+	<version>0.9.7</version>
 	
 	<name>CaRoWeb</name>
 	<url>https://sems.uni-rostock.de/projects/caro/</url>
@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CaRo</artifactId>
-			<version>0.8.2</version>
+			<version>0.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
