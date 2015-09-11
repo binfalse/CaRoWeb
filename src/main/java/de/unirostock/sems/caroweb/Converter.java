@@ -177,7 +177,13 @@ public class Converter
 		json.put ("notifications", notes);
 		
 		if (result != null && Files.exists (result))
+		{
 			json.put ("checkout", result.getFileName ().toString ());
+			if (request.getParameter ("redirect") != null && request.getParameter ("redirect").equals ("checkout"))
+			{
+				response.sendRedirect ("/checkout/" + result.getFileName ().toString ());
+			}
+		}
 		
 		response.setContentType ("application/json");
 		response.setCharacterEncoding ("UTF-8");
