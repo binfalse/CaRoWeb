@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -40,7 +42,10 @@ import javax.servlet.http.Part;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.hp.hpl.jena.reasoner.rulesys.impl.BFRuleContext;
+
 import de.binfalse.bflog.LOGGER;
+import de.binfalse.bfutils.FileRetriever;
 import de.binfalse.bfutils.GeneralTools;
 import de.unirostock.sems.caro.CaRoConverter;
 import de.unirostock.sems.caro.CaRoNotification;
@@ -64,11 +69,8 @@ public class Converter
 	private static final long	serialVersionUID	= -5459458067603941235L;
 	
 	
-	private void run (HttpServletRequest request, HttpServletResponse response)
-		throws ServletException,
-			IOException
+	private void cleanUp ()
 	{
-		
 		new Thread (new Runnable ()
 		{
 			
@@ -85,6 +87,12 @@ public class Converter
 				}
 			}
 		}).start ();
+	}
+	
+	private void runPost (HttpServletRequest request, HttpServletResponse response)
+		throws ServletException,
+			IOException
+	{
 		
 		Path STORAGE = CaRoWebutils.getStorage (getServletContext ());
 		
@@ -114,19 +122,32 @@ public class Converter
 		out.delete ();
 		// System.out.println (Arrays.toString (req));
 		Part filePart = request.getPart ("container");
-		if (filePart == null)
+		String uploadedName = null;
+		if (filePart != null)
+		{
+			uploadedName = extractFileName (filePart);
+			if (uploadedName == null)
+				uploadedName = "container";
+			
+			filePart.write (tmp.getAbsolutePath ());
+		}
+		else
 		{
 			error (request, response, "no file supplied");
 			return;
 		}
-		String uploadedName = extractFileName (filePart);
-		if (uploadedName == null)
-			uploadedName = "container";
+		
+		run (request, response, uploadedName, req, tmp, out, STORAGE);
+	}
+	
+	private void run (HttpServletRequest request, HttpServletResponse response, String uploadedName, String[] req, File tmp, File out, Path STORAGE) throws ServletException, IOException
+	{
+		cleanUp ();
+		
 		uploadedName.replaceAll ("[^A-Za-z0-9 ]", "_");
 		if (uploadedName.length () < 3)
 			uploadedName += "container";
 		
-		filePart.write (tmp.getAbsolutePath ());
 		CaRoConverter conv = null;
 		
 		if (req[1].equals ("caro"))
@@ -285,6 +306,67 @@ public class Converter
 	}
 	
 	
+	 
+
+	private void runGet (HttpServletRequest request, HttpServletResponse response)
+		throws ServletException,
+			IOException
+	{
+		
+		Path STORAGE = CaRoWebutils.getStorage (getServletContext ());
+		
+		String[] req = request.getRequestURI ()
+			.substring (request.getContextPath ().length ()).split ("/");
+		
+		if (req == null || req.length < 2)
+		{
+			error (request, response, "do not know what to do");
+			return;
+		}
+		
+		if (req.length > 2 && req[1].equals ("checkout"))
+		{
+			checkout (request, response, STORAGE, req[2]);
+			return;
+		}
+		
+		if (!req[1].equals ("caro") && !req[1].equals ("roca"))
+		{
+			error (request, response, "do not know what to do");
+			return;
+		}
+		
+		File tmp = File.createTempFile ("conatiner", "upload");
+		File out = File.createTempFile ("conatiner", "converted");
+		out.delete ();
+		
+		String uploadedName = null;
+		if (request.getParameter ("remote") != null)
+		{
+			try
+			{
+				String from = request.getParameter ("remote");
+				FileRetriever.FIND_LOCAL = false;
+				uploadedName = FileRetriever.getFile (new URI (from), tmp);
+			}
+			catch (URISyntaxException e)
+			{
+				error (request, response, "URI format not supported");
+				return;
+			}
+		}
+		else
+		{
+			error (request, response, "no file supplied");
+			return;
+		}
+		
+		run (request, response, uploadedName, req, tmp, out, STORAGE);
+	}
+	
+	
+	
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -295,10 +377,12 @@ public class Converter
 	{
 		try
 		{
-			run (request, response);
+			runGet (request, response);
 		}
 		catch (ServletException e)
 		{
+			e.printStackTrace ();
+			LOGGER.error (e, "invalid request");
 			error (request, response, "invalid request");
 		}
 	}
@@ -311,7 +395,7 @@ public class Converter
 	protected void doPost (HttpServletRequest request,
 		HttpServletResponse response) throws ServletException, IOException
 	{
-		run (request, response);
+		runPost (request, response);
 	}
 	
 }
