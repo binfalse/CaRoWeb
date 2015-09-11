@@ -117,8 +117,8 @@ public class Converter
 			return;
 		}
 		
-		File tmp = File.createTempFile ("conatiner", "upload");
-		File out = File.createTempFile ("conatiner", "converted");
+		File tmp = File.createTempFile ("container", "upload");
+		File out = File.createTempFile ("container", "converted");
 		out.delete ();
 		// System.out.println (Arrays.toString (req));
 		Part filePart = request.getPart ("container");
@@ -336,8 +336,8 @@ public class Converter
 			return;
 		}
 		
-		File tmp = File.createTempFile ("conatiner", "upload");
-		File out = File.createTempFile ("conatiner", "converted");
+		File tmp = File.createTempFile ("container", "upload");
+		File out = File.createTempFile ("container", "converted");
 		out.delete ();
 		
 		String uploadedName = null;
