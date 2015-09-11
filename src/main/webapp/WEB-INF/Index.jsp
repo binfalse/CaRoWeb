@@ -24,7 +24,7 @@
 		</p>
 	</c:if>
 		
-		<p>In a few years this will contain a usage/help. But for now you should better ask a search engine for <em>"CaRo COMBINE archive Research Objects"</em></p>
+		<p>For more information on CaRo and CaRoWeb please go to <a href="https://sems.uni-rostock.de/projects/caro/">the sems website</a></p>
 		
 	</body>
 </html>

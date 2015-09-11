@@ -3,7 +3,7 @@
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>CaRoWeb</artifactId>
 	<packaging>war</packaging>
-	<version>0.9.7</version>
+	<version>1.0</version>
 	
 	<name>CaRoWeb</name>
 	<url>https://sems.uni-rostock.de/projects/caro/</url>
