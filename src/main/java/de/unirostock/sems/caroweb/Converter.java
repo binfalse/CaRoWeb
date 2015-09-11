@@ -347,6 +347,7 @@ public class Converter
 			{
 				String from = request.getParameter ("remote");
 				FileRetriever.FIND_LOCAL = false;
+				FileRetriever.setUpCache (null);
 				uploadedName = FileRetriever.getFile (new URI (from), tmp);
 			}
 			catch (URISyntaxException e)
