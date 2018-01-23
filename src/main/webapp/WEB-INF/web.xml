@@ -5,7 +5,7 @@
 	<context-param>
 		<param-name>STORAGE</param-name>
 		<param-value>/tmp/CaRoWebStorage</param-value>
-		<description>storage directory</description>
+		<!-- <description>storage directory</description> -->
 	</context-param>
   
     <servlet>

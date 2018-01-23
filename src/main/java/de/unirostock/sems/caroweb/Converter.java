@@ -42,8 +42,6 @@ import javax.servlet.http.Part;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.hp.hpl.jena.reasoner.rulesys.impl.BFRuleContext;
-
 import de.binfalse.bflog.LOGGER;
 import de.binfalse.bfutils.FileRetriever;
 import de.binfalse.bfutils.GeneralTools;
