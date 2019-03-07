@@ -3,7 +3,7 @@
 	<groupId>de.uni-rostock.sbi</groupId>
 	<artifactId>CaRoWeb</artifactId>
 	<packaging>war</packaging>
-	<version>1.3.2</version>
+	<version>1.3.3</version>
 	
 	<name>CaRoWeb</name>
 	<description>Web interface to convert between COMBINE archives and Research objects.</description>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.2.2</version>
+			<version>[1.3.1,)</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
